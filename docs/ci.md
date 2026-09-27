@@ -57,7 +57,7 @@ Pushes to main keep the baseline cache warm, keyed by main's code.
 | `config` | `config.yaml` |
 | `working-directory` | `.` |
 | `python-version` | `3.12` |
-| `install` | `pip install -e . "upgrade-report[anthropic] @ git+https://github.com/atharvapingale/upgrade-report@v1"` |
+| `install` | `pip install -e . "upgrade-report @ git+https://github.com/atharvapingale/upgrade-report@v1"` (use `upgrade-report[anthropic]` for the built-in Claude judge) |
 | `ack-label` | `upgrade-report-acknowledged` |
 | `cache-dir` | `.upgrade-report` (must contain `cache.path`) |
 

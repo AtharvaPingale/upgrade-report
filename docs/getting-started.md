@@ -5,8 +5,8 @@ Goal: your project's first report in about 30 minutes.
 ## 1. Install and scaffold (2 minutes)
 
 ```bash
-pip install "upgrade-report[anthropic] @ git+https://github.com/atharvapingale/upgrade-report"
-# drop [anthropic] if you bring your own judge client
+pip install "upgrade-report @ git+https://github.com/atharvapingale/upgrade-report"
+# for the built-in Claude judge (judge.client: anthropic), install "upgrade-report[anthropic] @ ..." instead
 cd your-project
 upgrade-report init
 upgrade-report run          # runs the stub on the sample dataset

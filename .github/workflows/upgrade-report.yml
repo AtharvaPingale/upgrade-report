@@ -25,9 +25,11 @@ on:
         type: string
         default: "3.12"
       install:
-        description: Command that installs the project and upgrade-report.
+        description: >-
+          Command that installs the project and upgrade-report. Use
+          "upgrade-report[anthropic] @ ..." if the config sets judge.client: anthropic.
         type: string
-        default: pip install -e . "upgrade-report[anthropic] @ git+https://github.com/atharvapingale/upgrade-report@v1"
+        default: pip install -e . "upgrade-report @ git+https://github.com/atharvapingale/upgrade-report@v1"
       ack-label:
         description: PR label a reviewer adds to accept a Ship-with-caveats verdict.
         type: string

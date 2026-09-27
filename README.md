@@ -22,7 +22,7 @@ it differ, and what will it cost?*
 ## Quick start
 
 ```bash
-pip install "upgrade-report[anthropic] @ git+https://github.com/atharvapingale/upgrade-report"
+pip install "upgrade-report @ git+https://github.com/atharvapingale/upgrade-report"   # [anthropic] extra adds the built-in Claude judge
 upgrade-report init                   # config.yaml, pricing.yaml, target stub, sample data, CI workflows
 upgrade-report run --dry-run          # validate config, estimate what the run will cost
 upgrade-report run                    # writes ./reports/<timestamp>/report.{json,md}
@@ -89,7 +89,7 @@ statistics are calibrated: [docs/methodology.md](docs/methodology.md).
 ## Development
 
 ```bash
-uv venv && uv pip install -e '.[dev,anthropic]'
+uv venv && uv pip install -e '.[dev]'
 pytest                      # 92 tests, ~20 s, no network
 pytest -m "not slow"        # skip the calibration simulations
 ruff check .
