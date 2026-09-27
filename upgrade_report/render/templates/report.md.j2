@@ -1,0 +1,187 @@
+<!-- upgrade-report:{{ r.project }} -->
+## {{ VERDICT_ICONS[r.verdict] }} {{ r.verdict_label }}{% if r.mode == "aa" %} · A/A calibration{% endif %}
+
+**{{ r.verdict_reasons[0] }}**{% if r.verdict_reasons|length > 1 %} (+{{ r.verdict_reasons|length - 1 }} more){% endif %}
+
+
+`{{ r.project }}` · candidate **`{{ c.model }}`** · `{{ c.prompt }}` vs baseline **`{{ r.arms.baseline.model }}`** · `{{ r.arms.baseline.prompt }}` · {{ r.dataset.examples }} examples × {{ r.repeats }} repeats{% if r.baseline_ref %} · baseline from `{{ r.baseline_ref }}`{% endif %}
+
+{% if r.verdict_reasons|length > 1 %}
+
+<details><summary>All {{ r.verdict_reasons|length }} reasons</summary>
+
+{% for reason in r.verdict_reasons %}
+- {{ reason }}
+{% endfor %}
+
+</details>
+{% endif %}
+{% if r.warnings %}
+
+**Also flagged:**
+{% for w in r.warnings %}
+- {{ w }}
+{% endfor %}
+{% endif %}
+{% if r.comparisons|length > 1 %}
+
+### Candidate arms
+
+| Arm | Model | Prompt | Verdict | Δ {{ c.metrics[0].name if c.metrics[0].role == "primary" else "primary" }} | Cost / query |
+|---|---|---|---|--:|--:|
+{% for cmp in r.comparisons %}
+{% set p = (cmp.metrics | selectattr("role", "equalto", "primary") | list)[0] %}
+| {% if cmp.arm == r.recommended_arm %}**{{ cmp.arm }}** (recommended){% else %}{{ cmp.arm }}{% endif %} | `{{ cmp.model }}` | `{{ cmp.prompt }}` | {{ VERDICT_ICONS[cmp.verdict] }} {{ cmp.verdict_label }} | {{ p.delta|signed }} | {{ cmp.cost.candidate.per_query_usd|usd }} |
+{% endfor %}
+
+The rest of this report covers the recommended arm, **{{ r.recommended_arm }}**.
+{% endif %}
+
+### Metrics
+
+| Metric | Role | Baseline | Candidate | Δ | 95% CI | Noise floor | Status |
+|---|---|--:|--:|--:|---|--:|---|
+{% for m in c.metrics %}
+| {{ m.name|cell }} | {{ m.role }}{% if m.kind == "binary" %} · pass/fail{% endif %} | {{ m.baseline|num }} | {{ m.candidate|num }} | {{ m.delta|signed }} | {{ m.ci|ci }} | {{ m.noise_floor|num }} | {{ m.status|status_icon }} {{ m.status|status_text }} |
+{% endfor %}
+
+{% set primary = (c.metrics | selectattr("role", "equalto", "primary") | list)[0] %}
+Non-inferiority margin on **{{ primary.name }}**: {{ r.decision.primary_margin|signed }} · minimum detectable effect: {{ primary.mde|num }} · guardrail tolerance: {{ r.decision.guardrail_tolerance }}.
+{% if c.flips %}
+
+Pass/fail flips (per-example majority across repeats):
+{% for name, f in c.flips.items() %}
+- `{{ name }}`: {{ f.improved }} improved, {{ f.regressed }} regressed{% if f.method != "none" %} (McNemar p = {{ f.p_value|num(2) }}, {{ f.method }}){% endif %}
+
+{% endfor %}
+{% endif %}
+
+### Per-tag breakdown
+
+{% if c.slices %}
+| Tag | n | Metric | Baseline | Candidate | Δ | 95% CI | Status |
+|---|--:|---|--:|--:|--:|---|---|
+{% for s in c.slices %}
+{% for m in s.metrics if m.role == "primary" %}
+| {{ s.tag|cell }}{% if s.directional %} · _directional only_{% endif %} | {{ s.n }} | {{ m.name|cell }} | {{ m.baseline|num }} | {{ m.candidate|num }} | {{ m.delta|signed }} | {{ m.ci|ci }} | {{ m.status|status_icon }} {{ m.status|status_text }} |
+{% endfor %}
+{% endfor %}
+
+{% set flagged = c.slices | map(attribute="regressions") | sum(start=[]) %}
+{% if flagged %}
+Slice regressions (primary and guardrails):
+{% for f in flagged %}
+- {{ f }}
+{% endfor %}
+
+{% endif %}
+Slices under {{ r.decision.min_slice_size }} examples are _directional only_ and never block. {{ r.notes.multiple_comparisons }}
+{% else %}
+_No example carries slice metadata, so there is no per-tag breakdown._
+{% endif %}
+
+### Flipped cases
+
+{% set groups = [] %}
+{% for direction in ["regressed", "improved"] %}
+{% for m in c.metrics if m.role != "tracked" %}
+{% set items = c.examples | selectattr("metric", "equalto", m.name) | selectattr("direction", "equalto", direction) | list %}
+{% if items %}{% set _ = groups.append((m, direction, items)) %}{% endif %}
+{% endfor %}
+{% endfor %}
+{% if not groups %}
+_No example changed outcome beyond the noise floor._
+{% endif %}
+{% for m, direction, items in groups %}
+{% set shown = items if example_limit is none else items[:example_limit] %}
+{% if m.kind == "binary" %}{% set title = "pass → fail" if direction == "regressed" else "fail → pass" %}{% else %}{% set title = "largest drops" if direction == "regressed" else "largest gains" %}{% endif %}
+<details{% if direction == "regressed" and loop.first %} open{% endif %}><summary><b>{{ m.name }}</b>: {{ title }} ({{ items[0].total }}{% if items[0].total > shown|length %}, showing {{ shown|length }}{% endif %})</summary>
+
+{% for ex in shown %}
+**Q:** {{ ex.inputs|question|cell(300) }}{% if ex.tags %} · _{{ ex.tags|join(", ") }}_{% endif %}
+
+{% if ex.reference|reference %}
+_Reference:_ {{ ex.reference|reference|cell(300) }}
+
+{% endif %}
+Baseline ({{ ex.baseline_score|num(2) }}):
+{{ ex.baseline_answer|block }}
+
+Candidate ({{ ex.candidate_score|num(2) }}):
+{{ ex.candidate_answer|block }}
+
+{% if ex.baseline_trace or ex.candidate_trace %}
+{% if ex.baseline_trace %}[baseline trace]({{ ex.baseline_trace }}){% endif %}{% if ex.baseline_trace and ex.candidate_trace %} · {% endif %}{% if ex.candidate_trace %}[candidate trace]({{ ex.candidate_trace }}){% endif %} · `{{ ex.example_id }}`
+{% else %}
+`{{ ex.example_id }}`
+{% endif %}
+
+{% if not loop.last %}
+---
+
+{% endif %}
+{% endfor %}
+</details>
+
+{% endfor %}
+### Cost and latency
+
+| | Baseline | Candidate | Change |
+|---|--:|--:|--:|
+| Cost per query | {{ c.cost.baseline.per_query_usd|usd }} | {{ c.cost.candidate.per_query_usd|usd }} | {{ c.cost.change_pct|change_pct }} |
+| Monthly ({{ "{:,}".format(c.cost.monthly_queries) }} queries) | {{ c.cost.baseline.monthly_usd|usd }} | {{ c.cost.candidate.monthly_usd|usd }} | {{ c.cost.monthly_delta_usd|usd_delta }} |
+| Tokens per query (in / out) | {{ c.cost.baseline.input_tokens_per_query|num(0) }} / {{ c.cost.baseline.output_tokens_per_query|num(0) }} | {{ c.cost.candidate.input_tokens_per_query|num(0) }} / {{ c.cost.candidate.output_tokens_per_query|num(0) }} | |
+| Latency p50 | {{ c.latency.baseline.p50_s|secs }} | {{ c.latency.candidate.p50_s|secs }} | {{ c.latency.p50_change_pct|change_pct }} |
+| Latency p95 | {{ c.latency.baseline.p95_s|secs }} | {{ c.latency.candidate.p95_s|secs }} | {{ c.latency.p95_change_pct|change_pct }} |
+
+### Behavior
+
+{% set b = c.behavior %}
+| | Baseline | Candidate | Change |
+|---|--:|--:|--:|
+| Answer length, median (est. tokens) | {{ b.baseline.length_median|num(0) }} | {{ b.candidate.length_median|num(0) }} | {{ b.changes.length_median_pct|change_pct }} |
+| Answer length, p90 (est. tokens) | {{ b.baseline.length_p90|num(0) }} | {{ b.candidate.length_p90|num(0) }} | {{ b.changes.length_p90_pct|change_pct }} |
+| Refusal rate | {{ b.baseline.refusal_rate|rate }} | {{ b.candidate.refusal_rate|rate }} | {{ b.changes.refusal_rate_pts|pts }} |
+| Format failure rate | {{ b.baseline.format_failure_rate|rate }} | {{ b.candidate.format_failure_rate|rate }} | {{ b.changes.format_failure_pts|pts }} |
+| Target error rate | {{ b.baseline.error_rate|rate }} | {{ b.candidate.error_rate|rate }} | {{ b.changes.error_rate_pts|pts }} |
+{% if b.baseline.citations_per_answer is not none or b.candidate.citations_per_answer is not none %}
+| Citations per answer | {{ b.baseline.citations_per_answer|num(2) }} | {{ b.candidate.citations_per_answer|num(2) }} | {{ b.changes.citations_per_answer_delta|signed(2) }} |
+{% endif %}
+{% if b.baseline.tool_calls_per_answer is not none or b.candidate.tool_calls_per_answer is not none %}
+| Tool calls per answer | {{ b.baseline.tool_calls_per_answer|num(2) }} | {{ b.candidate.tool_calls_per_answer|num(2) }} | {{ b.changes.tool_calls_per_answer_delta|signed(2) }} |
+{% endif %}
+
+{% if b.flags %}
+Behavior flags: {% for f in b.flags %}{{ f.message }}{% if not loop.last %}; {% endif %}{% endfor %}.
+
+{% endif %}
+{% if b.baseline.tool_call_distribution or b.candidate.tool_call_distribution %}
+Tool-call mix: baseline {% for k, v in b.baseline.tool_call_distribution.items() %}`{{ k }}` {{ v|rate(0) }}{% if not loop.last %}, {% endif %}{% else %}none{% endfor %} · candidate {% for k, v in b.candidate.tool_call_distribution.items() %}`{{ k }}` {{ v|rate(0) }}{% if not loop.last %}, {% endif %}{% else %}none{% endfor %}.
+
+{% endif %}
+{% if c.pairwise %}
+{% if c.pairwise.n %}
+**Pairwise judge:** candidate preferred in {{ c.pairwise.preference_rate|rate(0) }} of {{ c.pairwise.n }} sampled comparisons (95% CI {{ c.pairwise.ci[0]|rate(0) }}–{{ c.pairwise.ci[1]|rate(0) }}; {{ c.pairwise.candidate_wins }} wins, {{ c.pairwise.baseline_wins }} losses, {{ c.pairwise.ties }} ties; order randomized).
+{% else %}
+**Pairwise judge:** no usable comparisons ({{ c.pairwise.error }}).
+{% endif %}
+
+{% endif %}
+### Caveats
+
+{% for note in r.caveats %}
+- {{ note }}
+{% endfor %}
+- What the verdict covers: this dataset, these metrics and this judge. It is not a guarantee about production traffic.
+
+<details><summary>Run details</summary>
+
+| Arm | Model | Prompt | Prompt hash | Code version | Repeats (cached / run / errors) |
+|---|---|---|---|---|---|
+{% for name, arm in r.arms.items() %}
+| {{ name }} | `{{ arm.model }}` | `{{ arm.prompt }}` | `{{ arm.prompt_hash }}` | `{{ arm.target_version }}` | {% for run in arm.runs %}{% if run.experiment_url %}[r{{ run.repeat }}]({{ run.experiment_url }}){% else %}r{{ run.repeat }}{% endif %} {{ run.cached }}/{{ run.executed }}/{{ run.errors }}{% if not loop.last %} · {% endif %}{% endfor %} |
+{% endfor %}
+
+Config `{{ r.config_hash }}` · dataset `{{ r.dataset.name }}` @ `{{ r.dataset.version }}` · judge `{{ r.judge.model }}` · upgrade-report {{ r.tool_version }} · {{ r.generated_at }}
+
+</details>

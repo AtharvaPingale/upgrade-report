@@ -1,0 +1,37 @@
+# Runs upgrade-report on PRs that change the model config, prompts, or retrieval
+# code, and on pushes to main (which keeps the baseline cache warm for PRs).
+# Make the `upgrade-report / report` and `upgrade-report / acknowledge` checks
+# required in branch protection.
+name: model-upgrade
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, labeled]
+    paths:
+      - config.yaml
+      - pricing.yaml
+      - prompts/**
+      - upgrade_eval/**
+      # - app/retrieval/**          # your retrieval code
+  push:
+    branches: [main]
+    paths:
+      - config.yaml
+      - pricing.yaml
+      - prompts/**
+      - upgrade_eval/**
+
+concurrency:
+  group: model-upgrade-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  upgrade-report:
+    uses: atharvapingale/upgrade-report/.github/workflows/upgrade-report.yml@v1
+    # The PR comment needs pull-requests: write; the default token may be read-only.
+    permissions:
+      contents: read
+      pull-requests: write
+    with:
+      config: config.yaml
+    secrets: inherit

@@ -1,0 +1,171 @@
+# Reusable workflow: run upgrade-report on a PR, post the report as a PR comment
+# (updating the same comment on re-runs), and gate the merge on the verdict.
+#
+#   exit 0  Ship               → passes
+#   exit 10 Ship with caveats  → `report` passes; `acknowledge` fails until a
+#                                reviewer adds the acknowledgement label
+#   exit 20 Don't ship         → `report` fails (make it a required check)
+#   exit 2  tool/config error  → `report` fails
+#
+# Call it from a project workflow with path filters; see
+# templates/project/.github/workflows/model-upgrade.yml.
+name: upgrade-report
+
+on:
+  workflow_call:
+    inputs:
+      config:
+        description: Path to config.yaml, relative to working-directory.
+        type: string
+        default: config.yaml
+      working-directory:
+        type: string
+        default: .
+      python-version:
+        type: string
+        default: "3.12"
+      install:
+        description: Command that installs the project and upgrade-report.
+        type: string
+        default: pip install -e . "upgrade-report[anthropic] @ git+https://github.com/atharvapingale/upgrade-report@v1"
+      ack-label:
+        description: PR label a reviewer adds to accept a Ship-with-caveats verdict.
+        type: string
+        default: upgrade-report-acknowledged
+      cache-dir:
+        description: Directory holding the SQLite eval cache (see cache.path in config).
+        type: string
+        default: .upgrade-report
+    outputs:
+      verdict:
+        value: ${{ jobs.report.outputs.verdict }}
+    secrets:
+      LANGSMITH_API_KEY:
+        required: false
+      ANTHROPIC_API_KEY:
+        required: false
+      OPENAI_API_KEY:
+        required: false
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  report:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    outputs:
+      verdict: ${{ steps.run.outputs.verdict }}
+      code: ${{ steps.run.outputs.code }}
+    defaults:
+      run:
+        working-directory: ${{ inputs.working-directory }}
+    env:
+      LANGSMITH_API_KEY: ${{ secrets.LANGSMITH_API_KEY }}
+      ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+      OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+      # PRs restore main's cache; runs on main keep it warm, so the baseline is
+      # almost always served from cache and only the candidate runs.
+      CACHE_BRANCH: ${{ github.head_ref || github.ref_name }}
+      BASE_BRANCH: ${{ github.base_ref || github.event.repository.default_branch }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # --baseline-ref reads the base branch's tree
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ inputs.python-version }}
+
+      - name: Install
+        run: ${{ inputs.install }}
+
+      - name: Restore eval cache
+        uses: actions/cache/restore@v4
+        with:
+          path: ${{ inputs.working-directory }}/${{ inputs.cache-dir }}
+          key: upgrade-report-${{ env.CACHE_BRANCH }}-${{ github.run_id }}
+          restore-keys: |
+            upgrade-report-${{ env.CACHE_BRANCH }}-
+            upgrade-report-${{ env.BASE_BRANCH }}-
+
+      - name: Run upgrade-report
+        id: run
+        run: |
+          set +e
+          args=(run --config "${{ inputs.config }}" --out reports)
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            # Use main's cached baseline so changes to code and local prompts are compared too.
+            args+=(--baseline-ref "origin/${{ github.base_ref }}")
+          fi
+          upgrade-report "${args[@]}"
+          code=$?
+          echo "code=$code" >> "$GITHUB_OUTPUT"
+          exit 0
+
+      - name: Save eval cache
+        if: always()
+        uses: actions/cache/save@v4
+        with:
+          path: ${{ inputs.working-directory }}/${{ inputs.cache-dir }}
+          key: upgrade-report-${{ env.CACHE_BRANCH }}-${{ github.run_id }}-${{ github.run_attempt }}
+
+      - name: Upload report
+        if: always() && steps.run.outputs.report_dir != ''
+        uses: actions/upload-artifact@v4
+        with:
+          name: upgrade-report
+          path: ${{ steps.run.outputs.report_dir }}
+
+      - name: Post or update PR comment
+        if: github.event_name == 'pull_request' && steps.run.outputs.report_dir != ''
+        uses: actions/github-script@v7
+        env:
+          REPORT: ${{ steps.run.outputs.report_dir }}/report.md
+        with:
+          script: |
+            const fs = require('fs');
+            const body = fs.readFileSync(process.env.REPORT, 'utf8');
+            const marker = body.split('\n')[0];  // <!-- upgrade-report:<project> -->
+            const { owner, repo } = context.repo;
+            const issue_number = context.issue.number;
+            const comments = await github.paginate(github.rest.issues.listComments,
+              { owner, repo, issue_number, per_page: 100 });
+            const existing = comments.find(c => (c.body || '').startsWith(marker));
+            if (existing) {
+              await github.rest.issues.updateComment({ owner, repo, comment_id: existing.id, body });
+            } else {
+              await github.rest.issues.createComment({ owner, repo, issue_number, body });
+            }
+
+      - name: Gate on verdict
+        if: github.event_name == 'pull_request'
+        env:
+          CODE: ${{ steps.run.outputs.code }}
+        run: |
+          case "$CODE" in
+            0)  echo "Ship" ;;
+            10) echo "Ship with caveats: see the 'acknowledge' check" ;;
+            20) echo "::error::Don't ship: see the report comment"; exit 1 ;;
+            *)  echo "::error::upgrade-report failed (exit $CODE)"; exit 1 ;;
+          esac
+
+  acknowledge:
+    # Ship with caveats does not block on its own, but a reviewer has to accept
+    # the caveats by labelling the PR. Adding the label re-runs the workflow
+    # (the caller triggers on `labeled`); everything is cached by then.
+    needs: report
+    if: github.event_name == 'pull_request' && needs.report.outputs.code == '10'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Require acknowledgement label
+        env:
+          ACKED: ${{ contains(github.event.pull_request.labels.*.name, inputs.ack-label) }}
+        run: |
+          if [ "$ACKED" = "true" ]; then
+            echo "Caveats acknowledged."
+          else
+            echo "::error::Ship with caveats: a reviewer must read the report and add the '${{ inputs.ack-label }}' label."
+            exit 1
+          fi

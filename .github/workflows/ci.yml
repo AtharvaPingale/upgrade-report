@@ -1,0 +1,70 @@
+# CI for upgrade-report itself. (upgrade-report.yml is the reusable workflow
+# that projects call; it does not run on this repository's own events.)
+name: ci
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install "ruff>=0.6"
+      - run: ruff check .
+
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.11", "3.12", "3.13"]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: pip
+      - run: pip install -e ".[dev]"
+      - run: pytest -q
+
+  package:
+    # The wheel must carry the `init` scaffold and templates; prove it by
+    # scaffolding and running a project from a clean install.
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install build
+      - run: python -m build
+      - name: Scaffold and run from the built wheel
+        run: |
+          python -m venv /tmp/wheel-venv
+          /tmp/wheel-venv/bin/pip install dist/*.whl
+          mkdir /tmp/demo && cd /tmp/demo
+          /tmp/wheel-venv/bin/upgrade-report init .
+          /tmp/wheel-venv/bin/upgrade-report run --dry-run
+          set +e
+          /tmp/wheel-venv/bin/upgrade-report run
+          code=$?
+          set -e
+          echo "exit code: $code"
+          test "$code" -eq 0 -o "$code" -eq 10
+      - uses: actions/upload-artifact@v4
+        with:
+          name: dist
+          path: dist/

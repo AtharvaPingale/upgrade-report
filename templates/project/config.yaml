@@ -1,0 +1,77 @@
+# upgrade-report configuration. Paths are relative to this file.
+# Reference: https://<internal-docs>/upgrade-report/configuration  (docs/configuration.md)
+
+project: my-project
+
+# LangSmith dataset name or ID. A .json/.jsonl path works too (the sample below
+# lets you try the tool before wiring up LangSmith).
+dataset: upgrade_eval/dataset.jsonl
+# dataset_version: prod          # optional LangSmith tag or timestamp to pin
+
+# The one function your project writes: run(inputs, model, prompt) -> {"answer": ...}
+target: upgrade_eval.target:run
+# Code that affects answers. Changes here invalidate cached runs.
+# Defaults to the target's top-level package; add your retrieval/app code:
+# target_paths: [upgrade_eval/, app/]
+
+baseline:                          # what runs in production today
+  model: model-a-2025-06
+  prompt: prompts/answer@v1
+candidate:                         # the change under review
+  model: model-b-2026-03
+  prompt: prompts/answer@v1
+# adapted_candidate:               # optional: the candidate with a prompt tuned for it
+#   model: model-b-2026-03
+#   prompt: prompts/answer@v1-b
+
+# Your existing LangSmith evaluators (module:function), or shared judges
+# (registry:correctness, registry:faithfulness, registry:answer_relevance,
+#  registry:exact_match, registry:refusal_correctness, registry:recall@<k>).
+evaluators:
+  - upgrade_eval.evaluators:reference_overlap
+  - upgrade_eval.evaluators:non_empty_answer
+  # - registry:faithfulness       # LLM judge; needs judge.client
+
+repeats: 3
+concurrency: 8
+
+judge:
+  model: judge-pinned-2025-10      # an exact model version, never an alias
+  temperature: 0                   # null for models that reject sampling parameters
+  # client: anthropic              # built-in adapter, or module:function for your own
+
+metrics:
+  primary: reference_overlap
+  guardrails: [non_empty_answer]
+  tracked: []
+  descriptions:                    # shown to clients in the HTML report
+    reference_overlap: Share of the reference answer's key terms that the answer covers.
+    non_empty_answer: Whether the system produced an answer at all.
+
+decision:
+  primary_margin: -0.02            # non-inferiority margin on the primary metric
+  guardrail_tolerance: noise       # "noise" or an absolute number
+  min_slice_size: 20
+
+behavior_flags:
+  length_change_pct: 25
+  refusal_rate_change_pts: 3
+  cost_increase_pct: 15
+
+behavior:
+  pairwise:
+    enabled: false                 # needs judge.client
+    sample_size: 75
+
+traffic:
+  monthly_queries: 120000
+
+pricing_file: pricing.yaml
+
+report:
+  formats: [md, json]              # add html for the client version
+  redact_inputs: false             # true to hide questions in the client version
+
+# schedule:                        # `upgrade-report scheduled`: try new model releases
+#   model_source: anthropic        # or module:function returning model ids
+#   model_filter: "^claude-"

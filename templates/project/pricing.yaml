@@ -1,0 +1,5 @@
+# USD per million tokens. Maintained by hand and checked in, because provider
+# prices change and must be versioned alongside the reports they produced.
+model-a-2025-06: { input_per_mtok: 3.00, output_per_mtok: 15.00 }
+model-b-2026-03: { input_per_mtok: 2.50, output_per_mtok: 10.00 }
+judge-pinned-2025-10: { input_per_mtok: 1.00, output_per_mtok: 5.00 }

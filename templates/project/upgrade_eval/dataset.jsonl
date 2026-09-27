@@ -1,0 +1,8 @@
+{"id": "sample-1", "inputs": {"question": "How do I reset my password?"}, "outputs": {"answer": "Use the Forgot password link on the sign-in page to reset your password by email."}, "metadata": {"tags": ["account"]}}
+{"id": "sample-2", "inputs": {"question": "Can I change the email on my account?"}, "outputs": {"answer": "Change your email under Settings, Profile; we send a confirmation link to the new address."}, "metadata": {"tags": ["account"]}}
+{"id": "sample-3", "inputs": {"question": "When will I be charged?"}, "outputs": {"answer": "You are charged on the first day of each billing cycle."}, "metadata": {"tags": ["billing"]}}
+{"id": "sample-4", "inputs": {"question": "How do I get a refund?"}, "outputs": {"answer": "Request a refund within 30 days from Orders, Request refund."}, "metadata": {"tags": ["billing", "returns"]}}
+{"id": "sample-5", "inputs": {"question": "Do you ship internationally?"}, "outputs": {"answer": "We ship to 40 countries; shipping options appear at checkout."}, "metadata": {"tags": ["shipping"]}}
+{"id": "sample-6", "inputs": {"question": "How long does standard shipping take?"}, "outputs": {"answer": "Standard shipping takes 3 to 5 business days."}, "metadata": {"tags": ["shipping"]}}
+{"id": "sample-7", "inputs": {"question": "Can I return a sale item?"}, "outputs": {"answer": "Sale items can be returned within 14 days in original condition."}, "metadata": {"tags": ["returns"]}}
+{"id": "sample-8", "inputs": {"question": "Where is my order?"}, "outputs": {"answer": "Track your order from Orders, Track shipment, using the tracking number."}, "metadata": {"tags": ["shipping"]}}

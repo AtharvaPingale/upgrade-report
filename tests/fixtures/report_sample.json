@@ -1,0 +1,1972 @@
+{
+  "schema_version": 1,
+  "tool_version": "0.1.0",
+  "project": "test-project",
+  "generated_at": "2026-01-15T12:00:00+00:00",
+  "config_hash": "fb88903d973ebffe",
+  "mode": "compare",
+  "baseline_ref": null,
+  "dataset": {
+    "name": "dataset.jsonl",
+    "source": "file",
+    "version": "65177bd35a7a14ba",
+    "as_of": null,
+    "examples": 80
+  },
+  "judge": {
+    "model": "fake-judge-2025-10",
+    "temperature": 0.0,
+    "client": "fake_judge:complete",
+    "max_tokens": 4096,
+    "calls": 1480,
+    "input_tokens": 221254,
+    "output_tokens": 29600
+  },
+  "repeats": 3,
+  "decision": {
+    "primary_margin": -0.05,
+    "guardrail_tolerance": "noise",
+    "min_slice_size": 20,
+    "bootstrap_resamples": 2000,
+    "seed": 20240601
+  },
+  "behavior_flags": {
+    "length_change_pct": 25.0,
+    "refusal_rate_change_pts": 3.0,
+    "cost_increase_pct": 15.0,
+    "format_failure_change_pts": 2.0,
+    "error_rate_change_pts": 1.0,
+    "latency_p95_increase_pct": null
+  },
+  "metric_descriptions": {
+    "correctness": "Whether the answer agrees with the reference answer.",
+    "faithfulness": "How much of the answer is supported by the retrieved sources (0 to 1)."
+  },
+  "arms": {
+    "baseline": {
+      "model": "fake-good-a",
+      "prompt": "prompts/answer@v1",
+      "prompt_hash": "7e76538bbb6f9aec",
+      "target_version": "157d0c0ec53475bc",
+      "runs": [
+        {
+          "repeat": 0,
+          "run_key": "e0be56d901dcefd0e9dea7b8",
+          "cached": 0,
+          "executed": 80,
+          "errors": 0,
+          "experiment": "test-project:r0",
+          "experiment_url": "https://smith.langchain.com/o/org-id/projects/p/exp-id"
+        },
+        {
+          "repeat": 1,
+          "run_key": "0abc58671c746e1b79f9ed74",
+          "cached": 0,
+          "executed": 80,
+          "errors": 0,
+          "experiment": "test-project:r1",
+          "experiment_url": "https://smith.langchain.com/o/org-id/projects/p/exp-id"
+        },
+        {
+          "repeat": 2,
+          "run_key": "32abc61c0494e3396650985e",
+          "cached": 0,
+          "executed": 80,
+          "errors": 0,
+          "experiment": "test-project:r2",
+          "experiment_url": "https://smith.langchain.com/o/org-id/projects/p/exp-id"
+        }
+      ]
+    },
+    "candidate": {
+      "model": "fake-verbose",
+      "prompt": "prompts/answer@v1",
+      "prompt_hash": "7e76538bbb6f9aec",
+      "target_version": "157d0c0ec53475bc",
+      "runs": [
+        {
+          "repeat": 0,
+          "run_key": "f4297bc2e8db5604ad8c0b4d",
+          "cached": 0,
+          "executed": 80,
+          "errors": 0,
+          "experiment": "test-project:r0",
+          "experiment_url": "https://smith.langchain.com/o/org-id/projects/p/exp-id"
+        },
+        {
+          "repeat": 1,
+          "run_key": "e3b54eba96be53cb13be7190",
+          "cached": 0,
+          "executed": 80,
+          "errors": 0,
+          "experiment": "test-project:r1",
+          "experiment_url": "https://smith.langchain.com/o/org-id/projects/p/exp-id"
+        },
+        {
+          "repeat": 2,
+          "run_key": "7a3ddf5f27f7bb85c9451156",
+          "cached": 0,
+          "executed": 80,
+          "errors": 0,
+          "experiment": "test-project:r2",
+          "experiment_url": "https://smith.langchain.com/o/org-id/projects/p/exp-id"
+        }
+      ]
+    },
+    "adapted_candidate": {
+      "model": "fake-good-b",
+      "prompt": "prompts/answer@v2",
+      "prompt_hash": "a9344673f453c8c5",
+      "target_version": "157d0c0ec53475bc",
+      "runs": [
+        {
+          "repeat": 0,
+          "run_key": "34cbb8d8937b8be5982cf781",
+          "cached": 0,
+          "executed": 80,
+          "errors": 0,
+          "experiment": "test-project:r0",
+          "experiment_url": "https://smith.langchain.com/o/org-id/projects/p/exp-id"
+        },
+        {
+          "repeat": 1,
+          "run_key": "5ef08a8fc6daa22c7493d11f",
+          "cached": 0,
+          "executed": 80,
+          "errors": 0,
+          "experiment": "test-project:r1",
+          "experiment_url": "https://smith.langchain.com/o/org-id/projects/p/exp-id"
+        },
+        {
+          "repeat": 2,
+          "run_key": "110c9f97e99b242c5ee74bfe",
+          "cached": 0,
+          "executed": 80,
+          "errors": 0,
+          "experiment": "test-project:r2",
+          "experiment_url": "https://smith.langchain.com/o/org-id/projects/p/exp-id"
+        }
+      ]
+    }
+  },
+  "recommended_arm": "adapted_candidate",
+  "verdict_label": "Ship with caveats",
+  "verdict": "ship_with_caveats",
+  "verdict_reasons": [
+    "MDE 0.106 for correctness is larger than the margin 0.050: this dataset is too small to rule out a regression of the size you care about",
+    "run-to-run noise on correctness (0.087) is larger than the margin 0.050: add repeats or examples"
+  ],
+  "metrics": [
+    {
+      "name": "correctness",
+      "role": "primary",
+      "kind": "binary",
+      "n": 80,
+      "baseline": 0.8416666666666666,
+      "candidate": 0.8291666666666666,
+      "delta": -0.0125,
+      "ci": [
+        -0.08343749999999985,
+        0.058333333333333334
+      ],
+      "noise_floor": 0.08660254037844387,
+      "mde": 0.10564884410851628,
+      "status": "within_noise",
+      "blocking": false,
+      "within_noise": true,
+      "reason": null
+    },
+    {
+      "name": "format_compliance",
+      "role": "guardrail",
+      "kind": "binary",
+      "n": 80,
+      "baseline": 1.0,
+      "candidate": 1.0,
+      "delta": 0.0,
+      "ci": [
+        0.0,
+        0.0
+      ],
+      "noise_floor": 0.0,
+      "mde": 0.0,
+      "status": "within_noise",
+      "blocking": false,
+      "within_noise": true,
+      "reason": null
+    },
+    {
+      "name": "quality",
+      "role": "tracked",
+      "kind": "continuous",
+      "n": 80,
+      "baseline": 0.7245559119693108,
+      "candidate": 0.7185363330925997,
+      "delta": -0.006019578876711113,
+      "ci": [
+        -0.01723298123409179,
+        0.005769263795434741
+      ],
+      "noise_floor": 0.015694987981964826,
+      "mde": 0.016839327949162392,
+      "status": "within_noise",
+      "blocking": false,
+      "within_noise": true,
+      "reason": null
+    },
+    {
+      "name": "faithfulness",
+      "role": "tracked",
+      "kind": "continuous",
+      "n": 80,
+      "baseline": 0.8416666666666666,
+      "candidate": 0.8291666666666666,
+      "delta": -0.0125,
+      "ci": [
+        -0.08343749999999985,
+        0.058333333333333334
+      ],
+      "noise_floor": 0.08660254037844387,
+      "mde": 0.10564884410851628,
+      "status": "within_noise",
+      "blocking": false,
+      "within_noise": true,
+      "reason": null
+    }
+  ],
+  "flips": {
+    "correctness": {
+      "improved": 6,
+      "regressed": 7,
+      "p_value": 1.0,
+      "method": "exact"
+    },
+    "format_compliance": {
+      "improved": 0,
+      "regressed": 0,
+      "p_value": 1.0,
+      "method": "none"
+    }
+  },
+  "slices": [
+    {
+      "tag": "account",
+      "n": 20,
+      "directional": false,
+      "metrics": [
+        {
+          "name": "correctness",
+          "role": "primary",
+          "kind": "binary",
+          "n": 20,
+          "baseline": 0.8666666666666666,
+          "candidate": 0.8166666666666667,
+          "delta": -0.05,
+          "ci": [
+            -0.16666666666666669,
+            0.06666666666666668
+          ],
+          "noise_floor": 0.17320508075688773,
+          "mde": 0.16971203738496873,
+          "status": "within_noise",
+          "blocking": false,
+          "within_noise": true,
+          "reason": null
+        },
+        {
+          "name": "format_compliance",
+          "role": "guardrail",
+          "kind": "binary",
+          "n": 20,
+          "baseline": 1.0,
+          "candidate": 1.0,
+          "delta": 0.0,
+          "ci": [
+            0.0,
+            0.0
+          ],
+          "noise_floor": 0.0,
+          "mde": 0.0,
+          "status": "within_noise",
+          "blocking": false,
+          "within_noise": true,
+          "reason": null
+        }
+      ],
+      "regressions": []
+    },
+    {
+      "tag": "billing",
+      "n": 20,
+      "directional": false,
+      "metrics": [
+        {
+          "name": "correctness",
+          "role": "primary",
+          "kind": "binary",
+          "n": 20,
+          "baseline": 0.8833333333333332,
+          "candidate": 0.85,
+          "delta": -0.03333333333333333,
+          "ci": [
+            -0.16666666666666669,
+            0.08333333333333334
+          ],
+          "noise_floor": 0.17320508075688773,
+          "mde": 0.17796324965093463,
+          "status": "within_noise",
+          "blocking": false,
+          "within_noise": true,
+          "reason": null
+        },
+        {
+          "name": "format_compliance",
+          "role": "guardrail",
+          "kind": "binary",
+          "n": 20,
+          "baseline": 1.0,
+          "candidate": 1.0,
+          "delta": 0.0,
+          "ci": [
+            0.0,
+            0.0
+          ],
+          "noise_floor": 0.0,
+          "mde": 0.0,
+          "status": "within_noise",
+          "blocking": false,
+          "within_noise": true,
+          "reason": null
+        }
+      ],
+      "regressions": []
+    },
+    {
+      "tag": "legal",
+      "n": 6,
+      "directional": true,
+      "metrics": [
+        {
+          "name": "correctness",
+          "role": "primary",
+          "kind": "binary",
+          "n": 6,
+          "baseline": 0.7777777777777777,
+          "candidate": 0.7777777777777777,
+          "delta": 0.0,
+          "ci": [
+            -0.16666666666666666,
+            0.16666666666666666
+          ],
+          "noise_floor": 0.2886751345948129,
+          "mde": 0.2411220642829423,
+          "status": "within_noise",
+          "blocking": false,
+          "within_noise": true,
+          "reason": null
+        },
+        {
+          "name": "format_compliance",
+          "role": "guardrail",
+          "kind": "binary",
+          "n": 6,
+          "baseline": 1.0,
+          "candidate": 1.0,
+          "delta": 0.0,
+          "ci": [
+            0.0,
+            0.0
+          ],
+          "noise_floor": 0.0,
+          "mde": 0.0,
+          "status": "within_noise",
+          "blocking": false,
+          "within_noise": true,
+          "reason": null
+        }
+      ],
+      "regressions": []
+    },
+    {
+      "tag": "returns",
+      "n": 20,
+      "directional": false,
+      "metrics": [
+        {
+          "name": "correctness",
+          "role": "primary",
+          "kind": "binary",
+          "n": 20,
+          "baseline": 0.8,
+          "candidate": 0.8666666666666666,
+          "delta": 0.06666666666666668,
+          "ci": [
+            -0.1,
+            0.23333333333333334
+          ],
+          "noise_floor": 0.20207259421636903,
+          "mde": 0.24048669542024811,
+          "status": "within_noise",
+          "blocking": false,
+          "within_noise": true,
+          "reason": null
+        },
+        {
+          "name": "format_compliance",
+          "role": "guardrail",
+          "kind": "binary",
+          "n": 20,
+          "baseline": 1.0,
+          "candidate": 1.0,
+          "delta": 0.0,
+          "ci": [
+            0.0,
+            0.0
+          ],
+          "noise_floor": 0.0,
+          "mde": 0.0,
+          "status": "within_noise",
+          "blocking": false,
+          "within_noise": true,
+          "reason": null
+        }
+      ],
+      "regressions": []
+    },
+    {
+      "tag": "shipping",
+      "n": 20,
+      "directional": false,
+      "metrics": [
+        {
+          "name": "correctness",
+          "role": "primary",
+          "kind": "binary",
+          "n": 20,
+          "baseline": 0.8166666666666667,
+          "candidate": 0.7833333333333333,
+          "delta": -0.03333333333333335,
+          "ci": [
+            -0.2,
+            0.13333333333333336
+          ],
+          "noise_floor": 0.14433756729740646,
+          "mde": 0.25258827222877156,
+          "status": "within_noise",
+          "blocking": false,
+          "within_noise": true,
+          "reason": null
+        },
+        {
+          "name": "format_compliance",
+          "role": "guardrail",
+          "kind": "binary",
+          "n": 20,
+          "baseline": 1.0,
+          "candidate": 1.0,
+          "delta": 0.0,
+          "ci": [
+            0.0,
+            0.0
+          ],
+          "noise_floor": 0.0,
+          "mde": 0.0,
+          "status": "within_noise",
+          "blocking": false,
+          "within_noise": true,
+          "reason": null
+        }
+      ],
+      "regressions": []
+    }
+  ],
+  "behavior": {
+    "baseline": {
+      "records": 240,
+      "length_median": 6.0,
+      "length_p90": 7.333333333333333,
+      "refusal_rate": 0.0,
+      "citations_per_answer": 0.8416666666666667,
+      "format_failure_rate": 0.0,
+      "error_rate": 0.0,
+      "tool_calls_per_answer": null,
+      "tool_call_distribution": {}
+    },
+    "candidate": {
+      "records": 240,
+      "length_median": 6.0,
+      "length_p90": 7.466666666666677,
+      "refusal_rate": 0.0,
+      "citations_per_answer": 0.8291666666666667,
+      "format_failure_rate": 0.0,
+      "error_rate": 0.0,
+      "tool_calls_per_answer": null,
+      "tool_call_distribution": {}
+    },
+    "changes": {
+      "length_median_pct": 0.0,
+      "length_p90_pct": 1.8181818181819693,
+      "refusal_rate_pts": 0.0,
+      "format_failure_pts": 0.0,
+      "error_rate_pts": 0.0,
+      "citations_per_answer_delta": -0.012499999999999956,
+      "tool_calls_per_answer_delta": null
+    },
+    "flags": []
+  },
+  "cost": {
+    "baseline": {
+      "per_query_usd": 0.0036844999999999994,
+      "monthly_usd": 442.13999999999993,
+      "input_tokens_per_query": 1200.0,
+      "output_tokens_per_query": 5.633333333333334,
+      "calls_with_usage": 240,
+      "calls": 240,
+      "missing_pricing": []
+    },
+    "candidate": {
+      "per_query_usd": 0.003056833333333333,
+      "monthly_usd": 366.81999999999994,
+      "input_tokens_per_query": 1200.0,
+      "output_tokens_per_query": 5.683333333333334,
+      "calls_with_usage": 240,
+      "calls": 240,
+      "missing_pricing": []
+    },
+    "change_pct": -17.035328176595648,
+    "monthly_delta_usd": -75.32,
+    "monthly_queries": 120000,
+    "flags": []
+  },
+  "latency": {
+    "baseline": {
+      "p50_s": 1.2,
+      "p95_s": 3.4,
+      "n": 240
+    },
+    "candidate": {
+      "p50_s": 0.9,
+      "p95_s": 2.6,
+      "n": 240
+    },
+    "p50_change_pct": -25.0,
+    "p95_change_pct": -23.5,
+    "flags": []
+  },
+  "pairwise": {
+    "n": 20,
+    "candidate_wins": 5,
+    "baseline_wins": 2,
+    "ties": 13,
+    "preference_rate": 0.575,
+    "ci": [
+      0.45,
+      0.7
+    ],
+    "errors": 0
+  },
+  "examples": [
+    {
+      "example_id": "q0-0006",
+      "metric": "correctness",
+      "role": "primary",
+      "kind": "binary",
+      "direction": "regressed",
+      "baseline_score": 0.6666666666666666,
+      "candidate_score": 0.3333333333333333,
+      "inputs": {
+        "question": "What is the value for item 6?",
+        "qid": "q0-0006",
+        "truth": "value-6"
+      },
+      "reference": {
+        "answer": "The answer is value-6.",
+        "doc_ids": [
+          "doc-q0-0006"
+        ]
+      },
+      "tags": [
+        "account"
+      ],
+      "baseline_answer": "The answer is value-6.",
+      "candidate_answer": "The answer is unclear from the sources.",
+      "baseline_trace": "https://smith.langchain.com/o/org-id/projects/p/project-id/r/b-q0-0006?poll=true",
+      "candidate_trace": "https://smith.langchain.com/o/org-id/projects/p/project-id/r/c-q0-0006?poll=true",
+      "total": 7
+    },
+    {
+      "example_id": "q0-0012",
+      "metric": "correctness",
+      "role": "primary",
+      "kind": "binary",
+      "direction": "regressed",
+      "baseline_score": 1.0,
+      "candidate_score": 0.3333333333333333,
+      "inputs": {
+        "question": "What is the value for item 12?",
+        "qid": "q0-0012",
+        "truth": "value-12"
+      },
+      "reference": {
+        "answer": "The answer is value-12.",
+        "doc_ids": [
+          "doc-q0-0012"
+        ]
+      },
+      "tags": [
+        "billing"
+      ],
+      "baseline_answer": "The answer is value-12.",
+      "candidate_answer": "The answer is unclear from the sources.",
+      "baseline_trace": "https://smith.langchain.com/o/org-id/projects/p/project-id/r/b-q0-0012?poll=true",
+      "candidate_trace": "https://smith.langchain.com/o/org-id/projects/p/project-id/r/c-q0-0012?poll=true",
+      "total": 7
+    },
+    {
+      "example_id": "q0-0013",
+      "metric": "correctness",
+      "role": "primary",
+      "kind": "binary",
+      "direction": "regressed",
+      "baseline_score": 1.0,
+      "candidate_score": 0.0,
+      "inputs": {
+        "question": "What is the value for item 13?",
+        "qid": "q0-0013",
+        "truth": "value-13"
+      },
+      "reference": {
+        "answer": "The answer is value-13.",
+        "doc_ids": [
+          "doc-q0-0013"
+        ]
+      },
+      "tags": [
+        "shipping"
+      ],
+      "baseline_answer": "The answer is value-13.",
+      "candidate_answer": "The answer is unclear from the sources.",
+      "baseline_trace": "https://smith.langchain.com/o/org-id/projects/p/project-id/r/b-q0-0013?poll=true",
+      "candidate_trace": "https://smith.langchain.com/o/org-id/projects/p/project-id/r/c-q0-0013?poll=true",
+      "total": 7
+    },
+    {
+      "example_id": "q0-0007",
+      "metric": "correctness",
+      "role": "primary",
+      "kind": "binary",
+      "direction": "improved",
+      "baseline_score": 0.3333333333333333,
+      "candidate_score": 1.0,
+      "inputs": {
+        "question": "What is the value for item 7?",
+        "qid": "q0-0007",
+        "truth": "value-7"
+      },
+      "reference": {
+        "answer": "The answer is value-7.",
+        "doc_ids": [
+          "doc-q0-0007"
+        ]
+      },
+      "tags": [
+        "returns"
+      ],
+      "baseline_answer": "The answer is unclear from the sources.",
+      "candidate_answer": "The answer is value-7.",
+      "baseline_trace": "https://smith.langchain.com/o/org-id/projects/p/project-id/r/b-q0-0007?poll=true",
+      "candidate_trace": "https://smith.langchain.com/o/org-id/projects/p/project-id/r/c-q0-0007?poll=true",
+      "total": 6
+    },
+    {
+      "example_id": "q0-0009",
+      "metric": "correctness",
+      "role": "primary",
+      "kind": "binary",
+      "direction": "improved",
+      "baseline_score": 0.3333333333333333,
+      "candidate_score": 1.0,
+      "inputs": {
+        "question": "What is the value for item 9?",
+        "qid": "q0-0009",
+        "truth": "value-9"
+      },
+      "reference": {
+        "answer": "The answer is value-9.",
+        "doc_ids": [
+          "doc-q0-0009"
+        ]
+      },
+      "tags": [
+        "shipping"
+      ],
+      "baseline_answer": "The answer is unclear from the sources.",
+      "candidate_answer": "The answer is value-9.",
+      "baseline_trace": "https://smith.langchain.com/o/org-id/projects/p/project-id/r/b-q0-0009?poll=true",
+      "candidate_trace": "https://smith.langchain.com/o/org-id/projects/p/project-id/r/c-q0-0009?poll=true",
+      "total": 6
+    },
+    {
+      "example_id": "q0-0039",
+      "metric": "correctness",
+      "role": "primary",
+      "kind": "binary",
+      "direction": "improved",
+      "baseline_score": 0.3333333333333333,
+      "candidate_score": 1.0,
+      "inputs": {
+        "question": "What is the value for item 39?",
+        "qid": "q0-0039",
+        "truth": "value-39"
+      },
+      "reference": {
+        "answer": "The answer is value-39.",
+        "doc_ids": [
+          "doc-q0-0039"
+        ]
+      },
+      "tags": [
+        "returns"
+      ],
+      "baseline_answer": "The answer is unclear from the sources.",
+      "candidate_answer": "The answer is value-39.",
+      "baseline_trace": "https://smith.langchain.com/o/org-id/projects/p/project-id/r/b-q0-0039?poll=true",
+      "candidate_trace": "https://smith.langchain.com/o/org-id/projects/p/project-id/r/c-q0-0039?poll=true",
+      "total": 6
+    }
+  ],
+  "warnings": [],
+  "comparisons": [
+    {
+      "arm": "candidate",
+      "model": "fake-verbose",
+      "prompt": "prompts/answer@v1",
+      "verdict": "ship_with_caveats",
+      "verdict_label": "Ship with caveats",
+      "verdict_reasons": [
+        "answer length +2750% (flag: 25%)",
+        "cost per query +28% (flag: 15%)",
+        "MDE 0.094 for correctness is larger than the margin 0.050: this dataset is too small to rule out a regression of the size you care about",
+        "run-to-run noise on correctness (0.087) is larger than the margin 0.050: add repeats or examples"
+      ],
+      "client_reasons": [
+        "Answers are 2750% longer than today.",
+        "Each question costs 28% more than today.",
+        "The test set is too small to rule out a drop in correctness of the size that matters; more test questions would make the conclusion firm.",
+        "Scores for correctness vary too much between identical runs to judge small differences."
+      ],
+      "warnings": [],
+      "metrics": [
+        {
+          "name": "correctness",
+          "role": "primary",
+          "kind": "binary",
+          "n": 80,
+          "baseline": 0.8416666666666666,
+          "candidate": 0.8666666666666668,
+          "delta": 0.025000000000000005,
+          "ci": [
+            -0.0375,
+            0.09166666666666667
+          ],
+          "noise_floor": 0.08660254037844387,
+          "mde": 0.0936444020490523,
+          "status": "within_noise",
+          "blocking": false,
+          "within_noise": true,
+          "reason": null
+        },
+        {
+          "name": "format_compliance",
+          "role": "guardrail",
+          "kind": "binary",
+          "n": 80,
+          "baseline": 1.0,
+          "candidate": 1.0,
+          "delta": 0.0,
+          "ci": [
+            0.0,
+            0.0
+          ],
+          "noise_floor": 0.0,
+          "mde": 0.0,
+          "status": "within_noise",
+          "blocking": false,
+          "within_noise": true,
+          "reason": null
+        },
+        {
+          "name": "quality",
+          "role": "tracked",
+          "kind": "continuous",
+          "n": 80,
+          "baseline": 0.7245559119693108,
+          "candidate": 0.7136158658514128,
+          "delta": -0.010940046117898025,
+          "ci": [
+            -0.025331487921747012,
+            0.0026411392285163315
+          ],
+          "noise_floor": 0.015694987981964826,
+          "mde": 0.020445471036270865,
+          "status": "within_noise",
+          "blocking": false,
+          "within_noise": true,
+          "reason": null
+        },
+        {
+          "name": "faithfulness",
+          "role": "tracked",
+          "kind": "continuous",
+          "n": 80,
+          "baseline": 0.8416666666666666,
+          "candidate": 0.06666666666666667,
+          "delta": -0.775,
+          "ci": [
+            -0.8189102564102564,
+            -0.7272435897435898
+          ],
+          "noise_floor": 0.08660254037844387,
+          "mde": 0.06850735212692946,
+          "status": "regressed",
+          "blocking": false,
+          "within_noise": false,
+          "reason": null
+        }
+      ],
+      "flips": {
+        "correctness": {
+          "improved": 6,
+          "regressed": 5,
+          "p_value": 1.0,
+          "method": "exact"
+        },
+        "format_compliance": {
+          "improved": 0,
+          "regressed": 0,
+          "p_value": 1.0,
+          "method": "none"
+        }
+      },
+      "slices": [
+        {
+          "tag": "account",
+          "n": 20,
+          "directional": false,
+          "metrics": [
+            {
+              "name": "correctness",
+              "role": "primary",
+              "kind": "binary",
+              "n": 20,
+              "baseline": 0.8666666666666666,
+              "candidate": 0.7666666666666666,
+              "delta": -0.1,
+              "ci": [
+                -0.2166666666666667,
+                0.03333333333333333
+              ],
+              "noise_floor": 0.17320508075688773,
+              "mde": 0.18052400354542694,
+              "status": "within_noise",
+              "blocking": false,
+              "within_noise": true,
+              "reason": null
+            },
+            {
+              "name": "format_compliance",
+              "role": "guardrail",
+              "kind": "binary",
+              "n": 20,
+              "baseline": 1.0,
+              "candidate": 1.0,
+              "delta": 0.0,
+              "ci": [
+                0.0,
+                0.0
+              ],
+              "noise_floor": 0.0,
+              "mde": 0.0,
+              "status": "within_noise",
+              "blocking": false,
+              "within_noise": true,
+              "reason": null
+            }
+          ],
+          "regressions": []
+        },
+        {
+          "tag": "billing",
+          "n": 20,
+          "directional": false,
+          "metrics": [
+            {
+              "name": "correctness",
+              "role": "primary",
+              "kind": "binary",
+              "n": 20,
+              "baseline": 0.8833333333333332,
+              "candidate": 0.9,
+              "delta": 0.016666666666666673,
+              "ci": [
+                -0.1,
+                0.1166666666666667
+              ],
+              "noise_floor": 0.17320508075688773,
+              "mde": 0.1585250299301764,
+              "status": "within_noise",
+              "blocking": false,
+              "within_noise": true,
+              "reason": null
+            },
+            {
+              "name": "format_compliance",
+              "role": "guardrail",
+              "kind": "binary",
+              "n": 20,
+              "baseline": 1.0,
+              "candidate": 1.0,
+              "delta": 0.0,
+              "ci": [
+                0.0,
+                0.0
+              ],
+              "noise_floor": 0.0,
+              "mde": 0.0,
+              "status": "within_noise",
+              "blocking": false,
+              "within_noise": true,
+              "reason": null
+            }
+          ],
+          "regressions": []
+        },
+        {
+          "tag": "legal",
+          "n": 6,
+          "directional": true,
+          "metrics": [
+            {
+              "name": "correctness",
+              "role": "primary",
+              "kind": "binary",
+              "n": 6,
+              "baseline": 0.7777777777777777,
+              "candidate": 0.9444444444444443,
+              "delta": 0.16666666666666666,
+              "ci": [
+                0.05555555555555556,
+                0.27777777777777785
+              ],
+              "noise_floor": 0.2886751345948129,
+              "mde": 0.20881783308197244,
+              "status": "within_noise",
+              "blocking": false,
+              "within_noise": true,
+              "reason": null
+            },
+            {
+              "name": "format_compliance",
+              "role": "guardrail",
+              "kind": "binary",
+              "n": 6,
+              "baseline": 1.0,
+              "candidate": 1.0,
+              "delta": 0.0,
+              "ci": [
+                0.0,
+                0.0
+              ],
+              "noise_floor": 0.0,
+              "mde": 0.0,
+              "status": "within_noise",
+              "blocking": false,
+              "within_noise": true,
+              "reason": null
+            }
+          ],
+          "regressions": []
+        },
+        {
+          "tag": "returns",
+          "n": 20,
+          "directional": false,
+          "metrics": [
+            {
+              "name": "correctness",
+              "role": "primary",
+              "kind": "binary",
+              "n": 20,
+              "baseline": 0.8,
+              "candidate": 0.8833333333333332,
+              "delta": 0.08333333333333334,
+              "ci": [
+                -0.05000000000000001,
+                0.21666666666666665
+              ],
+              "noise_floor": 0.20207259421636903,
+              "mde": 0.20183197174899384,
+              "status": "within_noise",
+              "blocking": false,
+              "within_noise": true,
+              "reason": null
+            },
+            {
+              "name": "format_compliance",
+              "role": "guardrail",
+              "kind": "binary",
+              "n": 20,
+              "baseline": 1.0,
+              "candidate": 1.0,
+              "delta": 0.0,
+              "ci": [
+                0.0,
+                0.0
+              ],
+              "noise_floor": 0.0,
+              "mde": 0.0,
+              "status": "within_noise",
+              "blocking": false,
+              "within_noise": true,
+              "reason": null
+            }
+          ],
+          "regressions": []
+        },
+        {
+          "tag": "shipping",
+          "n": 20,
+          "directional": false,
+          "metrics": [
+            {
+              "name": "correctness",
+              "role": "primary",
+              "kind": "binary",
+              "n": 20,
+              "baseline": 0.8166666666666667,
+              "candidate": 0.9166666666666666,
+              "delta": 0.1,
+              "ci": [
+                -0.03333333333333333,
+                0.23333333333333334
+              ],
+              "noise_floor": 0.14433756729740646,
+              "mde": 0.1928183186442914,
+              "status": "within_noise",
+              "blocking": false,
+              "within_noise": true,
+              "reason": null
+            },
+            {
+              "name": "format_compliance",
+              "role": "guardrail",
+              "kind": "binary",
+              "n": 20,
+              "baseline": 1.0,
+              "candidate": 1.0,
+              "delta": 0.0,
+              "ci": [
+                0.0,
+                0.0
+              ],
+              "noise_floor": 0.0,
+              "mde": 0.0,
+              "status": "within_noise",
+              "blocking": false,
+              "within_noise": true,
+              "reason": null
+            }
+          ],
+          "regressions": []
+        }
+      ],
+      "behavior": {
+        "baseline": {
+          "records": 240,
+          "length_median": 6.0,
+          "length_p90": 7.333333333333333,
+          "refusal_rate": 0.0,
+          "citations_per_answer": 0.8416666666666667,
+          "format_failure_rate": 0.0,
+          "error_rate": 0.0,
+          "tool_calls_per_answer": null,
+          "tool_call_distribution": {}
+        },
+        "candidate": {
+          "records": 240,
+          "length_median": 171.0,
+          "length_p90": 172.33333333333334,
+          "refusal_rate": 0.0,
+          "citations_per_answer": 0.8666666666666667,
+          "format_failure_rate": 0.0,
+          "error_rate": 0.0,
+          "tool_calls_per_answer": null,
+          "tool_call_distribution": {}
+        },
+        "changes": {
+          "length_median_pct": 2750.0,
+          "length_p90_pct": 2250.0,
+          "refusal_rate_pts": 0.0,
+          "format_failure_pts": 0.0,
+          "error_rate_pts": 0.0,
+          "citations_per_answer_delta": 0.025000000000000022,
+          "tool_calls_per_answer_delta": null
+        },
+        "flags": [
+          {
+            "name": "length",
+            "message": "answer length +2750% (flag: 25%)",
+            "plain": "Answers are 2750% longer than today."
+          }
+        ]
+      },
+      "cost": {
+        "baseline": {
+          "per_query_usd": 0.0036844999999999994,
+          "monthly_usd": 442.13999999999993,
+          "input_tokens_per_query": 1200.0,
+          "output_tokens_per_query": 5.633333333333334,
+          "calls_with_usage": 240,
+          "calls": 240,
+          "missing_pricing": []
+        },
+        "candidate": {
+          "per_query_usd": 0.004714125,
+          "monthly_usd": 565.695,
+          "input_tokens_per_query": 1200.0,
+          "output_tokens_per_query": 171.4125,
+          "calls_with_usage": 240,
+          "calls": 240,
+          "missing_pricing": []
+        },
+        "change_pct": 27.94476862532233,
+        "monthly_delta_usd": 123.55500000000012,
+        "monthly_queries": 120000,
+        "flags": [
+          {
+            "name": "cost",
+            "message": "cost per query +28% (flag: 15%)",
+            "plain": "Each question costs 28% more than today."
+          }
+        ]
+      },
+      "latency": {
+        "baseline": {
+          "p50_s": 1.2,
+          "p95_s": 3.4,
+          "n": 240
+        },
+        "candidate": {
+          "p50_s": 0.9,
+          "p95_s": 2.6,
+          "n": 240
+        },
+        "p50_change_pct": -25.0,
+        "p95_change_pct": -23.5,
+        "flags": []
+      },
+      "pairwise": {
+        "n": 20,
+        "candidate_wins": 6,
+        "baseline_wins": 14,
+        "ties": 0,
+        "preference_rate": 0.3,
+        "ci": [
+          0.1,
+          0.5
+        ],
+        "errors": 0
+      },
+      "examples": [
+        {
+          "example_id": "q0-0010",
+          "metric": "correctness",
+          "role": "primary",
+          "kind": "binary",
+          "direction": "regressed",
+          "baseline_score": 1.0,
+          "candidate_score": 0.3333333333333333,
+          "inputs": {
+            "question": "What is the value for item 10?",
+            "qid": "q0-0010",
+            "truth": "value-10"
+          },
+          "reference": {
+            "answer": "The answer is value-10.",
+            "doc_ids": [
+              "doc-q0-0010"
+            ]
+          },
+          "tags": [
+            "account"
+          ],
+          "baseline_answer": "The answer is value-10.",
+          "candidate_answer": "The answer is unclear from the sources. Here is some additional background that may be useful. Here is some additional background that may be useful. Here is some additional background that may be useful. Here is some additional background that may be useful. Here is some additional background that may be useful. Here is some additional background that may be useful. Here is some additional background that may be useful. Here is some additional background that may be useful. Here is some additional background that may be useful. Here is some additional background that may be useful. Here is some additional background that may be useful. Here is some additional background that may be useful. ",
+          "baseline_trace": "https://smith.langchain.com/o/org-id/projects/p/project-id/r/b-q0-0010?poll=true",
+          "candidate_trace": "https://smith.langchain.com/o/org-id/projects/p/project-id/r/c-q0-0010?poll=true",
+          "total": 5
+        },
+        {
+          "example_id": "q0-0023",
+          "metric": "correctness",
+          "role": "primary",
+          "kind": "binary",
+          "direction": "regressed",
+          "baseline_score": 1.0,
+          "candidate_score": 0.3333333333333333,
+          "inputs": {
+            "question": "What is the value for item 23?",
+            "qid": "q0-0023",
+            "truth": "value-23"
+          },
+          "reference": {
+            "answer": "The answer is value-23.",
+            "doc_ids": [
+              "doc-q0-0023"
+            ]
+          },
+          "tags": [
+            "returns"
+          ],
+          "baseline_answer": "The answer is value-23.",
+          "candidate_answer": "The answer is unclear from the sources. Here is some additional background that may be useful. Here is some additional background that may be useful. Here is some additional background that may be useful. Here is some additional background that may be useful. Here is some additional background that may be useful. Here is some additional background that may be useful. Here is some additional background that may be useful. Here is some additional background that may be useful. Here is some additional background that may be useful. Here is some additional background that may be useful. Here is some additional background that may be useful. Here is some additional background that may be useful. ",
+          "baseline_trace": "https://smith.langchain.com/o/org-id/projects/p/project-id/r/b-q0-0023?poll=true",
+          "candidate_trace": "https://smith.langchain.com/o/org-id/projects/p/project-id/r/c-q0-0023?poll=true",
+          "total": 5
+        },
+        {
+          "example_id": "q0-0032",
+          "metric": "correctness",
+          "role": "primary",
+          "kind": "binary",
+          "direction": "regressed",
+          "baseline_score": 1.0,
+          "candidate_score": 0.3333333333333333,
+          "inputs": {
+            "question": "What is the value for item 32?",
+            "qid": "q0-0032",
+            "truth": "value-32"
+          },
+          "reference": {
+            "answer": "The answer is value-32.",
+            "doc_ids": [
+              "doc-q0-0032"
+            ]
+          },
+          "tags": [
+            "billing"
+          ],
+          "baseline_answer": "The answer is value-32.",
+          "candidate_answer": "The answer is unclear from the sources. Here is some additional background that may be useful. Here is some additional background that may be useful. Here is some additional background that may be useful. Here is some additional background that may be useful. Here is some additional background that may be useful. Here is some additional background that may be useful. Here is some additional background that may be useful. Here is some additional background that may be useful. Here is some additional background that may be useful. Here is some additional background that may be useful. Here is some additional background that may be useful. Here is some additional background that may be useful. ",
+          "baseline_trace": "https://smith.langchain.com/o/org-id/projects/p/project-id/r/b-q0-0032?poll=true",
+          "candidate_trace": "https://smith.langchain.com/o/org-id/projects/p/project-id/r/c-q0-0032?poll=true",
+          "total": 5
+        },
+        {
+          "example_id": "q0-0007",
+          "metric": "correctness",
+          "role": "primary",
+          "kind": "binary",
+          "direction": "improved",
+          "baseline_score": 0.3333333333333333,
+          "candidate_score": 1.0,
+          "inputs": {
+            "question": "What is the value for item 7?",
+            "qid": "q0-0007",
+            "truth": "value-7"
+          },
+          "reference": {
+            "answer": "The answer is value-7.",
+            "doc_ids": [
+              "doc-q0-0007"
+            ]
+          },
+          "tags": [
+            "returns"
+          ],
+          "baseline_answer": "The answer is unclear from the sources.",
+          "candidate_answer": "The answer is value-7. Here is some additional background that may be useful. Here is some additional background that may be useful. Here is some additional background that may be useful. Here is some additional background that may be useful. Here is some additional background that may be useful. Here is some additional background that may be useful. Here is some additional background that may be useful. Here is some additional background that may be useful. Here is some additional background that may be useful. Here is some additional background that may be useful. Here is some additional background that may be useful. Here is some additional background that may be useful. ",
+          "baseline_trace": "https://smith.langchain.com/o/org-id/projects/p/project-id/r/b-q0-0007?poll=true",
+          "candidate_trace": "https://smith.langchain.com/o/org-id/projects/p/project-id/r/c-q0-0007?poll=true",
+          "total": 6
+        },
+        {
+          "example_id": "q0-0009",
+          "metric": "correctness",
+          "role": "primary",
+          "kind": "binary",
+          "direction": "improved",
+          "baseline_score": 0.3333333333333333,
+          "candidate_score": 1.0,
+          "inputs": {
+            "question": "What is the value for item 9?",
+            "qid": "q0-0009",
+            "truth": "value-9"
+          },
+          "reference": {
+            "answer": "The answer is value-9.",
+            "doc_ids": [
+              "doc-q0-0009"
+            ]
+          },
+          "tags": [
+            "shipping"
+          ],
+          "baseline_answer": "The answer is unclear from the sources.",
+          "candidate_answer": "The answer is value-9. Here is some additional background that may be useful. Here is some additional background that may be useful. Here is some additional background that may be useful. Here is some additional background that may be useful. Here is some additional background that may be useful. Here is some additional background that may be useful. Here is some additional background that may be useful. Here is some additional background that may be useful. Here is some additional background that may be useful. Here is some additional background that may be useful. Here is some additional background that may be useful. Here is some additional background that may be useful. ",
+          "baseline_trace": "https://smith.langchain.com/o/org-id/projects/p/project-id/r/b-q0-0009?poll=true",
+          "candidate_trace": "https://smith.langchain.com/o/org-id/projects/p/project-id/r/c-q0-0009?poll=true",
+          "total": 6
+        },
+        {
+          "example_id": "q0-0039",
+          "metric": "correctness",
+          "role": "primary",
+          "kind": "binary",
+          "direction": "improved",
+          "baseline_score": 0.3333333333333333,
+          "candidate_score": 1.0,
+          "inputs": {
+            "question": "What is the value for item 39?",
+            "qid": "q0-0039",
+            "truth": "value-39"
+          },
+          "reference": {
+            "answer": "The answer is value-39.",
+            "doc_ids": [
+              "doc-q0-0039"
+            ]
+          },
+          "tags": [
+            "returns"
+          ],
+          "baseline_answer": "The answer is unclear from the sources.",
+          "candidate_answer": "The answer is value-39. Here is some additional background that may be useful. Here is some additional background that may be useful. Here is some additional background that may be useful. Here is some additional background that may be useful. Here is some additional background that may be useful. Here is some additional background that may be useful. Here is some additional background that may be useful. Here is some additional background that may be useful. Here is some additional background that may be useful. Here is some additional background that may be useful. Here is some additional background that may be useful. Here is some additional background that may be useful. ",
+          "baseline_trace": "https://smith.langchain.com/o/org-id/projects/p/project-id/r/b-q0-0039?poll=true",
+          "candidate_trace": "https://smith.langchain.com/o/org-id/projects/p/project-id/r/c-q0-0039?poll=true",
+          "total": 6
+        }
+      ],
+      "curated_examples": []
+    },
+    {
+      "arm": "adapted_candidate",
+      "model": "fake-good-b",
+      "prompt": "prompts/answer@v2",
+      "verdict": "ship_with_caveats",
+      "verdict_label": "Ship with caveats",
+      "verdict_reasons": [
+        "MDE 0.106 for correctness is larger than the margin 0.050: this dataset is too small to rule out a regression of the size you care about",
+        "run-to-run noise on correctness (0.087) is larger than the margin 0.050: add repeats or examples"
+      ],
+      "client_reasons": [
+        "The test set is too small to rule out a drop in correctness of the size that matters; more test questions would make the conclusion firm.",
+        "Scores for correctness vary too much between identical runs to judge small differences."
+      ],
+      "warnings": [],
+      "metrics": [
+        {
+          "name": "correctness",
+          "role": "primary",
+          "kind": "binary",
+          "n": 80,
+          "baseline": 0.8416666666666666,
+          "candidate": 0.8291666666666666,
+          "delta": -0.0125,
+          "ci": [
+            -0.08343749999999985,
+            0.058333333333333334
+          ],
+          "noise_floor": 0.08660254037844387,
+          "mde": 0.10564884410851628,
+          "status": "within_noise",
+          "blocking": false,
+          "within_noise": true,
+          "reason": null
+        },
+        {
+          "name": "format_compliance",
+          "role": "guardrail",
+          "kind": "binary",
+          "n": 80,
+          "baseline": 1.0,
+          "candidate": 1.0,
+          "delta": 0.0,
+          "ci": [
+            0.0,
+            0.0
+          ],
+          "noise_floor": 0.0,
+          "mde": 0.0,
+          "status": "within_noise",
+          "blocking": false,
+          "within_noise": true,
+          "reason": null
+        },
+        {
+          "name": "quality",
+          "role": "tracked",
+          "kind": "continuous",
+          "n": 80,
+          "baseline": 0.7245559119693108,
+          "candidate": 0.7185363330925997,
+          "delta": -0.006019578876711113,
+          "ci": [
+            -0.01723298123409179,
+            0.005769263795434741
+          ],
+          "noise_floor": 0.015694987981964826,
+          "mde": 0.016839327949162392,
+          "status": "within_noise",
+          "blocking": false,
+          "within_noise": true,
+          "reason": null
+        },
+        {
+          "name": "faithfulness",
+          "role": "tracked",
+          "kind": "continuous",
+          "n": 80,
+          "baseline": 0.8416666666666666,
+          "candidate": 0.8291666666666666,
+          "delta": -0.0125,
+          "ci": [
+            -0.08343749999999985,
+            0.058333333333333334
+          ],
+          "noise_floor": 0.08660254037844387,
+          "mde": 0.10564884410851628,
+          "status": "within_noise",
+          "blocking": false,
+          "within_noise": true,
+          "reason": null
+        }
+      ],
+      "flips": {
+        "correctness": {
+          "improved": 6,
+          "regressed": 7,
+          "p_value": 1.0,
+          "method": "exact"
+        },
+        "format_compliance": {
+          "improved": 0,
+          "regressed": 0,
+          "p_value": 1.0,
+          "method": "none"
+        }
+      },
+      "slices": [
+        {
+          "tag": "account",
+          "n": 20,
+          "directional": false,
+          "metrics": [
+            {
+              "name": "correctness",
+              "role": "primary",
+              "kind": "binary",
+              "n": 20,
+              "baseline": 0.8666666666666666,
+              "candidate": 0.8166666666666667,
+              "delta": -0.05,
+              "ci": [
+                -0.16666666666666669,
+                0.06666666666666668
+              ],
+              "noise_floor": 0.17320508075688773,
+              "mde": 0.16971203738496873,
+              "status": "within_noise",
+              "blocking": false,
+              "within_noise": true,
+              "reason": null
+            },
+            {
+              "name": "format_compliance",
+              "role": "guardrail",
+              "kind": "binary",
+              "n": 20,
+              "baseline": 1.0,
+              "candidate": 1.0,
+              "delta": 0.0,
+              "ci": [
+                0.0,
+                0.0
+              ],
+              "noise_floor": 0.0,
+              "mde": 0.0,
+              "status": "within_noise",
+              "blocking": false,
+              "within_noise": true,
+              "reason": null
+            }
+          ],
+          "regressions": []
+        },
+        {
+          "tag": "billing",
+          "n": 20,
+          "directional": false,
+          "metrics": [
+            {
+              "name": "correctness",
+              "role": "primary",
+              "kind": "binary",
+              "n": 20,
+              "baseline": 0.8833333333333332,
+              "candidate": 0.85,
+              "delta": -0.03333333333333333,
+              "ci": [
+                -0.16666666666666669,
+                0.08333333333333334
+              ],
+              "noise_floor": 0.17320508075688773,
+              "mde": 0.17796324965093463,
+              "status": "within_noise",
+              "blocking": false,
+              "within_noise": true,
+              "reason": null
+            },
+            {
+              "name": "format_compliance",
+              "role": "guardrail",
+              "kind": "binary",
+              "n": 20,
+              "baseline": 1.0,
+              "candidate": 1.0,
+              "delta": 0.0,
+              "ci": [
+                0.0,
+                0.0
+              ],
+              "noise_floor": 0.0,
+              "mde": 0.0,
+              "status": "within_noise",
+              "blocking": false,
+              "within_noise": true,
+              "reason": null
+            }
+          ],
+          "regressions": []
+        },
+        {
+          "tag": "legal",
+          "n": 6,
+          "directional": true,
+          "metrics": [
+            {
+              "name": "correctness",
+              "role": "primary",
+              "kind": "binary",
+              "n": 6,
+              "baseline": 0.7777777777777777,
+              "candidate": 0.7777777777777777,
+              "delta": 0.0,
+              "ci": [
+                -0.16666666666666666,
+                0.16666666666666666
+              ],
+              "noise_floor": 0.2886751345948129,
+              "mde": 0.2411220642829423,
+              "status": "within_noise",
+              "blocking": false,
+              "within_noise": true,
+              "reason": null
+            },
+            {
+              "name": "format_compliance",
+              "role": "guardrail",
+              "kind": "binary",
+              "n": 6,
+              "baseline": 1.0,
+              "candidate": 1.0,
+              "delta": 0.0,
+              "ci": [
+                0.0,
+                0.0
+              ],
+              "noise_floor": 0.0,
+              "mde": 0.0,
+              "status": "within_noise",
+              "blocking": false,
+              "within_noise": true,
+              "reason": null
+            }
+          ],
+          "regressions": []
+        },
+        {
+          "tag": "returns",
+          "n": 20,
+          "directional": false,
+          "metrics": [
+            {
+              "name": "correctness",
+              "role": "primary",
+              "kind": "binary",
+              "n": 20,
+              "baseline": 0.8,
+              "candidate": 0.8666666666666666,
+              "delta": 0.06666666666666668,
+              "ci": [
+                -0.1,
+                0.23333333333333334
+              ],
+              "noise_floor": 0.20207259421636903,
+              "mde": 0.24048669542024811,
+              "status": "within_noise",
+              "blocking": false,
+              "within_noise": true,
+              "reason": null
+            },
+            {
+              "name": "format_compliance",
+              "role": "guardrail",
+              "kind": "binary",
+              "n": 20,
+              "baseline": 1.0,
+              "candidate": 1.0,
+              "delta": 0.0,
+              "ci": [
+                0.0,
+                0.0
+              ],
+              "noise_floor": 0.0,
+              "mde": 0.0,
+              "status": "within_noise",
+              "blocking": false,
+              "within_noise": true,
+              "reason": null
+            }
+          ],
+          "regressions": []
+        },
+        {
+          "tag": "shipping",
+          "n": 20,
+          "directional": false,
+          "metrics": [
+            {
+              "name": "correctness",
+              "role": "primary",
+              "kind": "binary",
+              "n": 20,
+              "baseline": 0.8166666666666667,
+              "candidate": 0.7833333333333333,
+              "delta": -0.03333333333333335,
+              "ci": [
+                -0.2,
+                0.13333333333333336
+              ],
+              "noise_floor": 0.14433756729740646,
+              "mde": 0.25258827222877156,
+              "status": "within_noise",
+              "blocking": false,
+              "within_noise": true,
+              "reason": null
+            },
+            {
+              "name": "format_compliance",
+              "role": "guardrail",
+              "kind": "binary",
+              "n": 20,
+              "baseline": 1.0,
+              "candidate": 1.0,
+              "delta": 0.0,
+              "ci": [
+                0.0,
+                0.0
+              ],
+              "noise_floor": 0.0,
+              "mde": 0.0,
+              "status": "within_noise",
+              "blocking": false,
+              "within_noise": true,
+              "reason": null
+            }
+          ],
+          "regressions": []
+        }
+      ],
+      "behavior": {
+        "baseline": {
+          "records": 240,
+          "length_median": 6.0,
+          "length_p90": 7.333333333333333,
+          "refusal_rate": 0.0,
+          "citations_per_answer": 0.8416666666666667,
+          "format_failure_rate": 0.0,
+          "error_rate": 0.0,
+          "tool_calls_per_answer": null,
+          "tool_call_distribution": {}
+        },
+        "candidate": {
+          "records": 240,
+          "length_median": 6.0,
+          "length_p90": 7.466666666666677,
+          "refusal_rate": 0.0,
+          "citations_per_answer": 0.8291666666666667,
+          "format_failure_rate": 0.0,
+          "error_rate": 0.0,
+          "tool_calls_per_answer": null,
+          "tool_call_distribution": {}
+        },
+        "changes": {
+          "length_median_pct": 0.0,
+          "length_p90_pct": 1.8181818181819693,
+          "refusal_rate_pts": 0.0,
+          "format_failure_pts": 0.0,
+          "error_rate_pts": 0.0,
+          "citations_per_answer_delta": -0.012499999999999956,
+          "tool_calls_per_answer_delta": null
+        },
+        "flags": []
+      },
+      "cost": {
+        "baseline": {
+          "per_query_usd": 0.0036844999999999994,
+          "monthly_usd": 442.13999999999993,
+          "input_tokens_per_query": 1200.0,
+          "output_tokens_per_query": 5.633333333333334,
+          "calls_with_usage": 240,
+          "calls": 240,
+          "missing_pricing": []
+        },
+        "candidate": {
+          "per_query_usd": 0.003056833333333333,
+          "monthly_usd": 366.81999999999994,
+          "input_tokens_per_query": 1200.0,
+          "output_tokens_per_query": 5.683333333333334,
+          "calls_with_usage": 240,
+          "calls": 240,
+          "missing_pricing": []
+        },
+        "change_pct": -17.035328176595648,
+        "monthly_delta_usd": -75.32,
+        "monthly_queries": 120000,
+        "flags": []
+      },
+      "latency": {
+        "baseline": {
+          "p50_s": 1.2,
+          "p95_s": 3.4,
+          "n": 240
+        },
+        "candidate": {
+          "p50_s": 0.9,
+          "p95_s": 2.6,
+          "n": 240
+        },
+        "p50_change_pct": -25.0,
+        "p95_change_pct": -23.5,
+        "flags": []
+      },
+      "pairwise": {
+        "n": 20,
+        "candidate_wins": 5,
+        "baseline_wins": 2,
+        "ties": 13,
+        "preference_rate": 0.575,
+        "ci": [
+          0.45,
+          0.7
+        ],
+        "errors": 0
+      },
+      "examples": [
+        {
+          "example_id": "q0-0006",
+          "metric": "correctness",
+          "role": "primary",
+          "kind": "binary",
+          "direction": "regressed",
+          "baseline_score": 0.6666666666666666,
+          "candidate_score": 0.3333333333333333,
+          "inputs": {
+            "question": "What is the value for item 6?",
+            "qid": "q0-0006",
+            "truth": "value-6"
+          },
+          "reference": {
+            "answer": "The answer is value-6.",
+            "doc_ids": [
+              "doc-q0-0006"
+            ]
+          },
+          "tags": [
+            "account"
+          ],
+          "baseline_answer": "The answer is value-6.",
+          "candidate_answer": "The answer is unclear from the sources.",
+          "baseline_trace": "https://smith.langchain.com/o/org-id/projects/p/project-id/r/b-q0-0006?poll=true",
+          "candidate_trace": "https://smith.langchain.com/o/org-id/projects/p/project-id/r/c-q0-0006?poll=true",
+          "total": 7
+        },
+        {
+          "example_id": "q0-0012",
+          "metric": "correctness",
+          "role": "primary",
+          "kind": "binary",
+          "direction": "regressed",
+          "baseline_score": 1.0,
+          "candidate_score": 0.3333333333333333,
+          "inputs": {
+            "question": "What is the value for item 12?",
+            "qid": "q0-0012",
+            "truth": "value-12"
+          },
+          "reference": {
+            "answer": "The answer is value-12.",
+            "doc_ids": [
+              "doc-q0-0012"
+            ]
+          },
+          "tags": [
+            "billing"
+          ],
+          "baseline_answer": "The answer is value-12.",
+          "candidate_answer": "The answer is unclear from the sources.",
+          "baseline_trace": "https://smith.langchain.com/o/org-id/projects/p/project-id/r/b-q0-0012?poll=true",
+          "candidate_trace": "https://smith.langchain.com/o/org-id/projects/p/project-id/r/c-q0-0012?poll=true",
+          "total": 7
+        },
+        {
+          "example_id": "q0-0013",
+          "metric": "correctness",
+          "role": "primary",
+          "kind": "binary",
+          "direction": "regressed",
+          "baseline_score": 1.0,
+          "candidate_score": 0.0,
+          "inputs": {
+            "question": "What is the value for item 13?",
+            "qid": "q0-0013",
+            "truth": "value-13"
+          },
+          "reference": {
+            "answer": "The answer is value-13.",
+            "doc_ids": [
+              "doc-q0-0013"
+            ]
+          },
+          "tags": [
+            "shipping"
+          ],
+          "baseline_answer": "The answer is value-13.",
+          "candidate_answer": "The answer is unclear from the sources.",
+          "baseline_trace": "https://smith.langchain.com/o/org-id/projects/p/project-id/r/b-q0-0013?poll=true",
+          "candidate_trace": "https://smith.langchain.com/o/org-id/projects/p/project-id/r/c-q0-0013?poll=true",
+          "total": 7
+        },
+        {
+          "example_id": "q0-0007",
+          "metric": "correctness",
+          "role": "primary",
+          "kind": "binary",
+          "direction": "improved",
+          "baseline_score": 0.3333333333333333,
+          "candidate_score": 1.0,
+          "inputs": {
+            "question": "What is the value for item 7?",
+            "qid": "q0-0007",
+            "truth": "value-7"
+          },
+          "reference": {
+            "answer": "The answer is value-7.",
+            "doc_ids": [
+              "doc-q0-0007"
+            ]
+          },
+          "tags": [
+            "returns"
+          ],
+          "baseline_answer": "The answer is unclear from the sources.",
+          "candidate_answer": "The answer is value-7.",
+          "baseline_trace": "https://smith.langchain.com/o/org-id/projects/p/project-id/r/b-q0-0007?poll=true",
+          "candidate_trace": "https://smith.langchain.com/o/org-id/projects/p/project-id/r/c-q0-0007?poll=true",
+          "total": 6
+        },
+        {
+          "example_id": "q0-0009",
+          "metric": "correctness",
+          "role": "primary",
+          "kind": "binary",
+          "direction": "improved",
+          "baseline_score": 0.3333333333333333,
+          "candidate_score": 1.0,
+          "inputs": {
+            "question": "What is the value for item 9?",
+            "qid": "q0-0009",
+            "truth": "value-9"
+          },
+          "reference": {
+            "answer": "The answer is value-9.",
+            "doc_ids": [
+              "doc-q0-0009"
+            ]
+          },
+          "tags": [
+            "shipping"
+          ],
+          "baseline_answer": "The answer is unclear from the sources.",
+          "candidate_answer": "The answer is value-9.",
+          "baseline_trace": "https://smith.langchain.com/o/org-id/projects/p/project-id/r/b-q0-0009?poll=true",
+          "candidate_trace": "https://smith.langchain.com/o/org-id/projects/p/project-id/r/c-q0-0009?poll=true",
+          "total": 6
+        },
+        {
+          "example_id": "q0-0039",
+          "metric": "correctness",
+          "role": "primary",
+          "kind": "binary",
+          "direction": "improved",
+          "baseline_score": 0.3333333333333333,
+          "candidate_score": 1.0,
+          "inputs": {
+            "question": "What is the value for item 39?",
+            "qid": "q0-0039",
+            "truth": "value-39"
+          },
+          "reference": {
+            "answer": "The answer is value-39.",
+            "doc_ids": [
+              "doc-q0-0039"
+            ]
+          },
+          "tags": [
+            "returns"
+          ],
+          "baseline_answer": "The answer is unclear from the sources.",
+          "candidate_answer": "The answer is value-39.",
+          "baseline_trace": "https://smith.langchain.com/o/org-id/projects/p/project-id/r/b-q0-0039?poll=true",
+          "candidate_trace": "https://smith.langchain.com/o/org-id/projects/p/project-id/r/c-q0-0039?poll=true",
+          "total": 6
+        }
+      ],
+      "curated_examples": []
+    }
+  ],
+  "eval_cost": {
+    "usd": 3.11856399999999,
+    "target_usd": 2.7493099999999897,
+    "judge_usd": 0.369254,
+    "target_calls": 720,
+    "judge_calls": 1480,
+    "unpriced_models": []
+  },
+  "caveats": [
+    "Judge: fake-judge-2025-10 (temperature 0.0), pinned and identical across arms.",
+    "Dataset: dataset.jsonl, content version 65177bd35a7a14ba, 80 examples.",
+    "Repeats: 3 per arm.",
+    "Minimum detectable effect on correctness (candidate): 0.094 vs margin 0.050.",
+    "Minimum detectable effect on correctness (adapted_candidate): 0.106 vs margin 0.050.",
+    "This eval run cost $3.12 (720 target calls, 1480 judge calls)."
+  ],
+  "notes": {
+    "multiple_comparisons": "Many slices and metrics are compared. At 95% confidence roughly 1 comparison in 20 looks significant by chance, so treat an isolated slice difference as a lead to investigate, not a finding."
+  },
+  "client": {
+    "title": null,
+    "examples": []
+  }
+}

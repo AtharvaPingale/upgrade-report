@@ -1,0 +1,155 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{{ r.client.title or (r.project ~ " model upgrade assessment") }}</title>
+<style>
+  :root {
+    --bg: #fbfaf7; --surface: #ffffff; --text: #1d1d1b; --muted: #5f5d57; --line: #e4e1d8;
+    --ship: #1f7a4d; --ship-bg: #e7f4ec; --caveat: #8a5a00; --caveat-bg: #fbf1dc;
+    --dont: #a3261f; --dont-bg: #fbe7e5; --accent: #2d4a8a;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #151514; --surface: #1d1d1b; --text: #ecebe6; --muted: #a8a59c; --line: #34332f;
+      --ship: #6fcf97; --ship-bg: #17301f; --caveat: #f2c14e; --caveat-bg: #33280f;
+      --dont: #f28b82; --dont-bg: #3a1b18; --accent: #9db6f2;
+    }
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--text);
+         font: 16px/1.55 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; }
+  main { max-width: 920px; margin: 0 auto; padding: 40px 16px 64px; }
+  header p { color: var(--muted); margin: 4px 0 0; }
+  h1 { font-size: 1.75rem; line-height: 1.25; margin: 0; letter-spacing: -0.01em; }
+  h2 { font-size: 1.2rem; margin: 40px 0 12px; }
+  .verdict { margin-top: 28px; border-radius: 12px; padding: 20px 24px; border: 1px solid var(--line); }
+  .verdict.ship { background: var(--ship-bg); border-color: var(--ship); }
+  .verdict.ship_with_caveats { background: var(--caveat-bg); border-color: var(--caveat); }
+  .verdict.dont_ship { background: var(--dont-bg); border-color: var(--dont); }
+  .verdict .label { font-size: 1.5rem; font-weight: 700; margin: 0 0 6px; }
+  .ship .label { color: var(--ship); } .ship_with_caveats .label { color: var(--caveat); } .dont_ship .label { color: var(--dont); }
+  .verdict ul { margin: 12px 0 0; padding-left: 20px; }
+  .compare { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; }
+  .card { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 14px 16px; }
+  .card .k { color: var(--muted); font-size: 0.85rem; }
+  .card .v { font-size: 1.1rem; font-weight: 600; overflow-wrap: anywhere; }
+  .table-wrap { overflow-x: auto; background: var(--surface); border: 1px solid var(--line); border-radius: 10px; }
+  table { border-collapse: collapse; width: 100%; font-size: 0.95rem; }
+  th, td { padding: 10px 12px; text-align: left; border-bottom: 1px solid var(--line); vertical-align: top; }
+  tr:last-child td { border-bottom: none; }
+  th { font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.04em; color: var(--muted); font-weight: 600; }
+  td.n { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .desc { color: var(--muted); font-size: 0.85rem; }
+  .pill { display: inline-block; padding: 2px 8px; border-radius: 999px; font-size: 0.8rem; font-weight: 600; white-space: nowrap; }
+  .s-improved, .s-pass { background: var(--ship-bg); color: var(--ship); }
+  .s-within_noise { background: var(--line); color: var(--text); }
+  .s-regressed, .s-missing { background: var(--caveat-bg); color: var(--caveat); }
+  .s-fail { background: var(--dont-bg); color: var(--dont); }
+  .example { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 16px; margin-bottom: 14px; }
+  .example .q { font-weight: 600; margin-bottom: 10px; }
+  .answers { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 12px; }
+  .answer { border-left: 3px solid var(--line); padding-left: 12px; white-space: pre-wrap; overflow-wrap: anywhere; font-size: 0.93rem; }
+  .answer .who { font-size: 0.8rem; color: var(--muted); font-weight: 600; text-transform: uppercase; letter-spacing: 0.04em; display: block; margin-bottom: 4px; white-space: normal; }
+  .answer.proposed { border-left-color: var(--accent); }
+  dl.explain dt { font-weight: 600; margin-top: 12px; }
+  dl.explain dd { margin: 2px 0 0; color: var(--muted); }
+  footer { margin-top: 48px; color: var(--muted); font-size: 0.85rem; border-top: 1px solid var(--line); padding-top: 16px; }
+  @media print { body { background: #fff; } .verdict, .card, .table-wrap, .example { break-inside: avoid; } }
+</style>
+</head>
+<body>
+<main>
+<header>
+  <h1>{{ r.client.title or (r.project ~ ": model upgrade assessment") }}</h1>
+  <p>Prepared {{ r.generated_at[:10] }}</p>
+</header>
+
+{% set primary = (c.metrics | selectattr("role", "equalto", "primary") | list)[0] %}
+<section class="verdict {{ c.verdict }}">
+  <p class="label">{{ r.verdict_label }}</p>
+  {% if c.verdict == "ship" %}
+  <p>The proposed configuration performs at least as well as the current one on every measure we track, within the tolerances agreed for this project.</p>
+  {% elif c.verdict == "ship_with_caveats" %}
+  <p>The proposed configuration is not meaningfully worse on the main quality measure, but some points need a decision before switching:</p>
+  <ul>{% for reason in c.client_reasons %}<li>{{ reason }}</li>{% endfor %}</ul>
+  {% else %}
+  <p>The proposed configuration is measurably worse on a measure that matters, so we recommend staying on the current configuration for now:</p>
+  <ul>{% for reason in c.client_reasons %}<li>{{ reason }}</li>{% endfor %}</ul>
+  {% endif %}
+</section>
+
+<h2>What we compared</h2>
+<div class="compare">
+  <div class="card"><div class="k">Current model</div><div class="v">{{ r.arms.baseline.model }}</div></div>
+  <div class="card"><div class="k">Proposed model</div><div class="v">{{ c.model }}</div></div>
+  <div class="card"><div class="k">Test set</div><div class="v">{{ r.dataset.examples }} questions × {{ r.repeats }} runs each</div></div>
+</div>
+
+<h2>Quality</h2>
+<div class="table-wrap">
+<table>
+  <thead><tr><th>Measure</th><th class="n">Current</th><th class="n">Proposed</th><th class="n">Change</th><th>Assessment</th></tr></thead>
+  <tbody>
+  {% for m in c.metrics %}
+    <tr>
+      <td>{{ m.name|metric_name }}{% if m.role == "primary" %} <span class="desc">(main measure)</span>{% endif %}
+        {% if r.metric_descriptions.get(m.name) %}<div class="desc">{{ r.metric_descriptions[m.name] }}</div>{% endif %}</td>
+      {% if m.kind == "binary" %}
+      <td class="n">{{ m.baseline|rate }}</td><td class="n">{{ m.candidate|rate }}</td>
+      <td class="n">{{ (m.delta * 100 if m.delta is not none else none)|pts }}</td>
+      {% else %}
+      <td class="n">{{ m.baseline|num(2) }}</td><td class="n">{{ m.candidate|num(2) }}</td><td class="n">{{ m.delta|signed(3) }}</td>
+      {% endif %}
+      <td><span class="pill s-{{ m.status }}">{{ m.status|client_status(m.role) }}</span></td>
+    </tr>
+  {% endfor %}
+  </tbody>
+</table>
+</div>
+
+<h2>Cost and speed</h2>
+<div class="table-wrap">
+<table>
+  <thead><tr><th></th><th class="n">Current</th><th class="n">Proposed</th><th class="n">Change</th></tr></thead>
+  <tbody>
+    <tr><td>Cost per question</td><td class="n">{{ c.cost.baseline.per_query_usd|usd }}</td><td class="n">{{ c.cost.candidate.per_query_usd|usd }}</td><td class="n">{{ c.cost.change_pct|change_pct }}</td></tr>
+    <tr><td>Monthly cost at {{ "{:,}".format(c.cost.monthly_queries) }} questions</td><td class="n">{{ c.cost.baseline.monthly_usd|usd }}</td><td class="n">{{ c.cost.candidate.monthly_usd|usd }}</td><td class="n">{{ c.cost.monthly_delta_usd|usd_delta }}</td></tr>
+    <tr><td>Typical response time</td><td class="n">{{ c.latency.baseline.p50_s|secs }}</td><td class="n">{{ c.latency.candidate.p50_s|secs }}</td><td class="n">{{ c.latency.p50_change_pct|change_pct }}</td></tr>
+    <tr><td>Slow responses (95th percentile)</td><td class="n">{{ c.latency.baseline.p95_s|secs }}</td><td class="n">{{ c.latency.candidate.p95_s|secs }}</td><td class="n">{{ c.latency.p95_change_pct|change_pct }}</td></tr>
+  </tbody>
+</table>
+</div>
+
+{% if examples %}
+<h2>Example answers</h2>
+{% for ex in examples %}
+<div class="example">
+  <div class="q">{{ ex.question|truncate_text(600) }}</div>
+  <div class="answers">
+    <div class="answer"><span class="who">Current</span>{{ ex.baseline_answer|truncate_text }}</div>
+    <div class="answer proposed"><span class="who">Proposed{% if ex.direction == "improved" %} · better on {{ ex.metric|metric_name|lower }}{% elif ex.direction == "regressed" %} · worse on {{ ex.metric|metric_name|lower }}{% endif %}</span>{{ ex.candidate_answer|truncate_text }}</div>
+  </div>
+</div>
+{% endfor %}
+{% endif %}
+
+<h2>How to read this</h2>
+<dl class="explain">
+  <dt>Both configurations answered the same questions</dt>
+  <dd>Every comparison is made question by question, so differences in question difficulty cancel out. Each question was answered {{ r.repeats }} times by each configuration and the results averaged.</dd>
+  <dt>“No real change”</dt>
+  <dd>We measured how much the current configuration's own scores move between identical runs. A difference smaller than that run-to-run variation is not a real change and is never counted as a regression.</dd>
+  <dt>“No meaningful drop”</dt>
+  <dd>The goal of an upgrade is usually to be no worse on quality while being cheaper or faster, not to be strictly better. For the main measure, a drop is meaningful when it could exceed {{ (r.decision.primary_margin|abs * 100)|round(1) }} points on a 0–100 scale.</dd>
+  <dt>What this does not cover</dt>
+  <dd>The results describe this test set and these measures. They are strong evidence, not a guarantee about every future question, which is why we keep monitoring after a switch.</dd>
+</dl>
+
+<footer>
+  {{ r.dataset.examples }} test questions · {{ r.repeats }} runs per configuration · answers graded by {{ r.judge.model }} with fixed settings · generated {{ r.generated_at[:10] }}
+</footer>
+</main>
+</body>
+</html>
